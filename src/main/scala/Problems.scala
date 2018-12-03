@@ -1,6 +1,7 @@
 import java.io.FileReader
 import java.io.BufferedReader
-import scala.collection.mutable.Set
+
+import scala.collection.mutable.{ArrayBuffer, Set}
 
 object Problems {
 
@@ -59,7 +60,6 @@ object Problems {
     }
     return twoLetter * threeLetter
   }
-
   def day2_2(inputFile: String): String = {
     var stringSet: scala.collection.mutable.Set[String] = scala.collection.mutable.Set()
 
@@ -81,4 +81,95 @@ object Problems {
     return ""
   }
 
+  def day3_1(inputFile: String): Int = {
+    var claimList: List[Claim] = List[Claim]()
+    val f = new BufferedReader(new FileReader(inputFile))
+    while (f.ready()) {
+      val line = f.readLine()
+      val id = Integer.parseInt(line.substring(1,line.indexOf("@")).trim)
+      val x = Integer.parseInt(line.substring(line.indexOf("@")+1,line.indexOf(",")).trim)
+      val y = Integer.parseInt(line.substring(line.indexOf(",")+ 1,line.indexOf(":")).trim)
+      val w = Integer.parseInt(line.substring(line.indexOf(":")+1,line.indexOf("x")).trim)
+      val h = Integer.parseInt(line.substring(line.indexOf("x")+1,line.length).trim)
+      claimList = Claim(id,x,y,w,h, x+w, y+h) :: claimList
+    }
+    //var arrayCounter :ArrayBuffer[Int] = new ArrayBuffer[Int](claimList.max.maxX,claimList.max.maxY) // uses max'es to define array size.
+    val arrayCounter: Array[Array[Int]] = Array.ofDim[Int](claimList.maxBy(x => x.maxX).maxX+1,claimList.maxBy(x => x.maxY).maxY+1)
+    for (c <- claimList){
+      var w = 0
+      var h = 0
+      while(h < c.height){
+        while(w < c.width)
+          {
+            arrayCounter(c.x +w)(c.y+h) += 1
+            w +=1
+          }
+        w = 0
+        h += 1
+      }
+    }
+    //see count of array items that have value of 2 or more.
+    var finalResult = 0
+    arrayCounter.foreach(x => x.foreach(y => if(y > 1){finalResult += 1}))
+    return finalResult
+  }
+  def day3_2(inputFile: String): Int = {
+    var claimList: List[Claim] = List[Claim]()
+    val f = new BufferedReader(new FileReader(inputFile))
+    while (f.ready()) {
+      val line = f.readLine()
+      val id = Integer.parseInt(line.substring(1,line.indexOf("@")).trim)
+      val x = Integer.parseInt(line.substring(line.indexOf("@")+1,line.indexOf(",")).trim)
+      val y = Integer.parseInt(line.substring(line.indexOf(",")+ 1,line.indexOf(":")).trim)
+      val w = Integer.parseInt(line.substring(line.indexOf(":")+1,line.indexOf("x")).trim)
+      val h = Integer.parseInt(line.substring(line.indexOf("x")+1,line.length).trim)
+      claimList = Claim(id,x,y,w,h, x+w, y+h) :: claimList
+    }
+    //var arrayCounter :ArrayBuffer[Int] = new ArrayBuffer[Int](claimList.max.maxX,claimList.max.maxY) // uses max'es to define array size.
+    val arrayCounter: Array[Array[Int]] = Array.ofDim[Int](claimList.maxBy(x => x.maxX).maxX+1,claimList.maxBy(x => x.maxY).maxY+1)
+    for (c <- claimList){
+      var w = 0
+      var h = 0
+      while(h < c.height){
+        while(w < c.width)
+        {
+          arrayCounter(c.x +w)(c.y+h) += 1
+          w +=1
+        }
+        w = 0
+        h += 1
+      }
+    }
+
+    for(i<-0 to arrayCounter.length)
+      {
+        for(c<-0 to claimList.maxBy(x => x.maxY).maxY)
+          {
+            if (arrayCounter(i)(c) == 1){ //if its one this particular square did not overlap
+              if(claimList.count(x => x.x == i && x.y == c) == 1){ //there is an origin at this point
+                val claim = claimList.filter(x => x.x == i && x.y == c)(0) //check no parts of the claim at this origin overlap with any other.
+                var w = 0
+                var h = 0
+                var claimDoesNotOverLap = true
+                while(h < claim.height){
+                  while(w < claim.width)
+                  {
+                    if(arrayCounter(claim.x +w)(claim.y+h) > 1){
+                      {
+                        claimDoesNotOverLap = false
+                      }
+                    }
+                    w +=1
+                  }
+                  w = 0
+                  h += 1
+                }
+                if(claimDoesNotOverLap == true){return claim.id}
+              }
+            }
+          }
+      }
+    return 0
+  }
 }
+case class Claim(id: Int,x: Int,y: Int,width: Int,height: Int, maxX : Int, maxY: Int)
