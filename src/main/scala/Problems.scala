@@ -1,10 +1,8 @@
-import java.io.FileReader
-import java.io.BufferedReader
+import java.io.{BufferedReader, FileReader}
 import java.text.SimpleDateFormat
-import java.util.Calendar
 
+import scala.collection.mutable.ArrayBuffer
 import scala.io.Source._
-import scala.collection.mutable.{ArrayBuffer, Set}
 
 object Problems {
 
@@ -210,6 +208,53 @@ object Problems {
     //mostMin.foreach(x => println(x))
     return worstGuard * mostMinsFinal
   }
+
+  def day5_1(inputFile: String): Int ={
+    val theString : String = fromFile(inputFile).mkString
+    val theStringAsCharArray : ArrayBuffer[Char] = new ArrayBuffer[Char]()
+    theString.copyToBuffer(theStringAsCharArray)
+    var y = runThroughList(theStringAsCharArray)
+    //var num =0
+    for(num <- 0 to theStringAsCharArray.length - 1){
+      y = runThroughList(y) // how to properly implement this as a recurring function????
+    }
+
+    return y.length
+  }
+  def day5_2(inputFile: String): Int ={
+    val theString : String = fromFile(inputFile).mkString
+    var letterMap : scala.collection.mutable.Map[String,Int] = scala.collection.mutable.Map[String,Int]()
+    val rangeAZ = 'a' to 'z'
+    for(letter <- rangeAZ) //This is very slow. must be something better
+      {
+        val theNewString = theString.replaceAll("(?i)"+letter.toString,"")
+        var theStringAsCharArray : ArrayBuffer[Char] = new ArrayBuffer[Char]()
+        theNewString.copyToBuffer(theStringAsCharArray)
+        var y = runThroughList(theStringAsCharArray)
+        //var num =0
+        for(num <- 0 to theStringAsCharArray.length - 1){
+          y = runThroughList(y) // how to properly implement this as a recurring function????
+        }
+        letterMap += (letter.toString -> y.length)
+      }
+    return letterMap.minBy(x => x._2)_2
+  }
+
+  def runThroughList(stringArray: ArrayBuffer[Char]): ArrayBuffer[Char] = { //Method to support Day5_1
+    var i = 0
+    while (i < stringArray.length-1) {
+      if (stringArray(i).toUpper == stringArray(i + 1).toUpper) {
+        if (stringArray(i) != stringArray(i + 1)) {
+          stringArray.remove(i)//remove this
+          stringArray.remove(i)//and the next
+         return stringArray
+        }
+      }
+      i += 1
+    }
+    return stringArray //or may need to fold?
+  }
+
 }
 case class Claim(id: Int,x: Int,y: Int,width: Int,height: Int, maxX : Int, maxY: Int)
 case class Awake(guardID: Int, date: String, asleepMins:List[Int])

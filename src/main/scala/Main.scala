@@ -16,7 +16,12 @@ object AoC {
     //println("Day 3 Answer 2: ")
     //println(Problems.day3_2("InputFiles/Day3_1.txt"))
 
-    println("Day 4 Answer 1: ")
-    println(Problems.day4_1("InputFiles/Day4_1.txt"))
+    //println("Day 4 Answer 1: ")
+    //println(Problems.day4_1("InputFiles/Day4_1.txt"))
+
+    //println("Day 5 Answer 1: ")
+    //println(Problems.day5_1("InputFiles/Day5_1.txt"))
+    println("Day 5 Answer 2: ")
+    println(Problems.day5_2("InputFiles/Day5_1.txt"))
   }
 }
