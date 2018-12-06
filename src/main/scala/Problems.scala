@@ -1,6 +1,9 @@
 import java.io.FileReader
 import java.io.BufferedReader
+import java.text.SimpleDateFormat
+import java.util.Calendar
 
+import scala.io.Source._
 import scala.collection.mutable.{ArrayBuffer, Set}
 
 object Problems {
@@ -171,5 +174,42 @@ object Problems {
       }
     return 0
   }
+
+  def day4_1(inputFile: String): Int = {
+    val lines = fromFile(inputFile).getLines
+    val sortedList = lines.toList.sortBy(s => new SimpleDateFormat("yyyy-MM-dd hh:mm").parse("2018"+s.substring(5,s.indexOf("]"))))
+    // now it's in chronological order
+    var i = 0
+    var guardList : List[Awake] = List[Awake]()
+    while(i < sortedList.length)
+      {
+        if (sortedList(i).contains("#")){
+          val id = Integer.parseInt(sortedList(i).substring(sortedList(i).indexOf("#")+1,sortedList(i).indexOf("begins")).trim)
+          val date = sortedList(i).substring(sortedList(i).indexOf("[")+1,sortedList(i).indexOf(" "))
+          var asleepList : List[Int] = List.empty[Int]
+          i += 1
+          while(i < sortedList.length && !sortedList(i).contains("#"))
+            {
+              val sleep :Int = Integer.parseInt(sortedList(i).substring(15,17))
+              val awaken :Int = Integer.parseInt(sortedList(i+1).substring(15,17)) -1
+              val minsAsleep = (sleep to awaken).toList
+              //add asleep times
+              asleepList = minsAsleep ::: asleepList
+              i += 2
+            }
+            guardList = Awake(id,date,asleepList) :: guardList
+        }
+      }
+    val guardListSummed = guardList.map(x => (x.guardID,x.asleepMins.length))
+    //guardListSummed.foreach(x => println(x._1 + "," + x._2))
+    val worstGuard = guardListSummed.maxBy(x => x._2)._1 //AM i getting the right guard?
+    val justThisGuard = guardList.filter(x => x.guardID == worstGuard)
+    val mostMin = justThisGuard.flatMap(x => x.asleepMins).groupBy(identity)
+    val mostMin2 = mostMin.maxBy(x => x._2.size)._2.size
+    val mostMinsFinal = mostMin.filter(x => x._2.size == mostMin2).maxBy(x => x._1)._1
+    //mostMin.foreach(x => println(x))
+    return worstGuard * mostMinsFinal
+  }
 }
 case class Claim(id: Int,x: Int,y: Int,width: Int,height: Int, maxX : Int, maxY: Int)
+case class Awake(guardID: Int, date: String, asleepMins:List[Int])

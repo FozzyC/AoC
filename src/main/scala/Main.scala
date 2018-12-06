@@ -13,7 +13,10 @@ object AoC {
 
     //println("Day 3 Answer 1: ")
     //println(Problems.day3_1("InputFiles/Day3_1.txt"))
-    println("Day 3 Answer 2: ")
-    println(Problems.day3_2("InputFiles/Day3_1.txt"))
+    //println("Day 3 Answer 2: ")
+    //println(Problems.day3_2("InputFiles/Day3_1.txt"))
+
+    println("Day 4 Answer 1: ")
+    println(Problems.day4_1("InputFiles/Day4_1.txt"))
   }
 }
